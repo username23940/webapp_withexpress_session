@@ -1,7 +1,22 @@
 const express = require("express") // express 에는 다른 것이 들어올 일이 없으니까, 저 이름의 값이 바뀌지 않도록 고정(const로)
 const app = express() // express를 호출. app 객체를 담음. 
+var fs = require('fs');
+var template = require('./lib/template.js');
+// modules
 
-app.get("/", (req,res) => res.send("Hello World")) // app 객체에서 get 메서드 사용.
+app.get("/", (request, response) => 
+     fs.readdir('./data', function(error, filelist){
+        var title = 'Welcome';
+        var description = 'Hello, Node.js';
+        var list = template.list(filelist);
+        var html = template.HTML(title, list,
+        `<h2>${title}</h2>${description}`,
+        `<a href="/create">create</a>`
+        );
+        response.send(html);
+        });
+    ); 
+// app 객체에서 get 메서드 사용.
 // app.get("/", function(req,res) { return res.send("Hello World");} 이거랑 같아
 // get 메서드 : 라우트, 라우팅. 사용자들이 여러가지 path로 들어올 때, path마다 적당한 응답을 해줌
 // 첫번째 인자는 경로, 두번쨰 인자는 그 경로로 접속했을 때 실행할 함수 = 라우팅

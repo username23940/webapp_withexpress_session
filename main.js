@@ -8,7 +8,7 @@ var qs = require('querystring');
 var bodyParser = require("body-parser");
 // modules
 
-app.use(bodyParser.urlencoded({extended: False}));
+app.use(bodyParser.urlencoded({extended: False})); // app.use()는 “이 미들웨어를 전체 요청 흐름의 일부로 포함시켜라”는 뜻이에요
 
 app.get("/", (request, response) => 
      fs.readdir('./data', function(error, filelist){

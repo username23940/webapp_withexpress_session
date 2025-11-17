@@ -1,5 +1,6 @@
 const express = require("express") // express 에는 다른 것이 들어올 일이 없으니까, 저 이름의 값이 바뀌지 않도록 고정(const로)
 const app = express() // express를 호출. app 객체를 담음. 
+const compression = require('compression');
 var fs = require('fs');
 var template = require('./lib/template.js');
 var path = require('path');
@@ -9,22 +10,26 @@ var bodyParser = require("body-parser");
 // modules
 
 app.use(bodyParser.urlencoded({extended: False})); // app.use()는 “이 미들웨어를 전체 요청 흐름의 일부로 포함시켜라”는 뜻이에요
+app.use(compression()); // 함수 호출 -> 미들웨어를 리턴하도록 약속됨. 그것이 app.use를 통해 장착
+app.get('*', function(request, response, next{ // get 방식으로 들어오는 모든 요청에 대해서만 작동
+     fs.readdir('./data', function(error, filelist){
+          request.list=filelist; // request 객체의 list 변수를 filelist의 값으로 줌
+          next(); // 3번째 인자를 실행. next에는 그다음에 호출되어야 할 미들웨어가 담겨져 있음(지금은 없음)
+     });
+});
 
 app.get("/", (request, response) => 
-     fs.readdir('./data', function(error, filelist){
         var title = 'Welcome';
         var description = 'Hello, Node.js';
-        var list = template.list(filelist);
+        var list = template.list(request.list);
         var html = template.HTML(title, list,
         `<h2>${title}</h2>${description}`,
         `<a href="/create">create</a>`
         );
         response.send(html);
-     });
 ); 
 
 app.get("/page/:pageId", (request, response) =>
-     fs.readdir('./data', function(error, filelist){
           var filteredId = path.parse(request.params.pageId).base;
           fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
             var title = request.params.pageId;
@@ -32,7 +37,7 @@ app.get("/page/:pageId", (request, response) =>
             var sanitizedDescription = sanitizeHtml(description, {
               allowedTags:['h1']
             });
-            var list = template.list(filelist);
+            var list = template.list(request.list);
             var html = template.HTML(sanitizedTitle, list,
               `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
               ` <a href="/create">create</a>
@@ -44,13 +49,11 @@ app.get("/page/:pageId", (request, response) =>
             );
             response.send(html);
           });
-     });
 );
 
 app.get("/create", (request, response) => 
-    fs.readdir('./data', function(error, filelist){
         var title = 'WEB - create';
-        var list = template.list(filelist);
+        var list = template.list(request.list);
         var html = template.HTML(title, list, `
           <form action="/create_process" method="post">
             <p><input type="text" name="title" placeholder="title"></p>
@@ -63,7 +66,6 @@ app.get("/create", (request, response) =>
           </form>
         `, '');
         response.send(html);
-    });
 );
 
 app.post("/create_process", (request, response) =>  // form 에서 post 방식으로 전송했기 때문 
@@ -77,11 +79,10 @@ app.post("/create_process", (request, response) =>  // form 에서 post 방식�
 );
 
 app.get("/update/:pageId", (request, response) =>
-    fs.readdir('./data', function(error, filelist){
         var filteredId = path.parse(request.params.pageId).base;
         fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
             var title = request.params.pageId;
-            var list = template.list(filelist);
+            var list = template.list(request.list);
             var html = template.HTML(title, list,
             `
             <form action="/update_process" method="post">
@@ -99,7 +100,6 @@ app.get("/update/:pageId", (request, response) =>
             );
             response.send(html);
         });
-      });
 );
 
 app.post("/update_process", (request, response) =>  

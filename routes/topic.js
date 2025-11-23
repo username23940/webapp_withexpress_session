@@ -5,6 +5,7 @@ var template = require('./lib/template.js');
 var path = require('path');
 var sanitizeHtml = require('sanitize-html');
 var qs = require('querystring');
+var auth = require('../lib/auth.js');
 
 
 router.get("/create", (request, response) => 
@@ -20,7 +21,7 @@ router.get("/create", (request, response) =>
               <input type="submit">
             </p>
           </form>
-        `, '');
+        `, '', auth.statusUI(request, response));
         response.send(html);
 );
 
@@ -52,7 +53,7 @@ router.get("/update/:pageId", (request, response) =>
               </p>
             </form>
             `,
-            `<a href="/create">create</a> <a href="/update/${title}">update</a>`
+            `<a href="/create">create</a> <a href="/update/${title}">update</a>`, auth.statusUI(request, response)
             );
             response.send(html);
         });
@@ -95,7 +96,7 @@ router.get("/page/:pageId", (request, response, next) => // 미들웨어 순서�
                <form action="/delete_process" method="post"> // /delete... 라고 안적으면 눌렀을 때, /page의 하위에서 delete로 이동!
                <input type="hidden" name="id" value="${sanitizedTitle}">
                <input type="submit" value="delete">
-           </form>`
+           </form>`, auth.statusUI(request, response)
        );
        response.send(html);
      }

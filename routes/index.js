@@ -3,7 +3,7 @@ var router = express.Router();
 var template = require('../lib/template.js');
 var auth = require('../lib/auth.js');
 
-router.get('/', function(request, response) {
+router.get('/', function(request, response) { 
     
    var title = 'Welcome';
    var description = 'Hello, Node.js';

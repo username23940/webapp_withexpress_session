@@ -7,7 +7,7 @@ var sanitizeHtml = require('sanitize-html');
 var qs = require('querystring');
 var helmet = require('helmet');
 app.use(helmet());
-var session = require('express-session');
+var session = require('express-session'); // 여기서 세션 생성하니까 여기만 필요
 var FileStore = require('session-file-store')(session)
 
 var authData = {
@@ -20,7 +20,7 @@ router.get("/login", (request, response) =>
         var title = 'WEB - create';
         var list = template.list(request.list);
         var html = template.HTML(title, list, `
-          <form action="/auth/1login_process" method="post">
+          <form action="/auth/login_process" method="post">
             <p><input type="text" name="email" placeholder="email"></p>
             <p><input type="password" name="pwd" placeholder="password"></p>
             <p><input type="submit" value = 'login'></p>
@@ -33,7 +33,7 @@ router.post("/login_process", (request, response) =>  // form 에서 post 방식
    var post = request.body;
    var email = post.email;
    var passowrd = post.pwd;
-   if(email === authData.email && pwd === authData.password) {
+   if(email === authData.email && pwd === authData.password) { // authData가 db라고 가정하면 db의 데이터와 일치하는지 확인하고, session 추가
      request.session.is_logined = true;
      request.session.nickname = authData.nickname;
      request.session.save(function(err) { // session 객체의 정보를 저장소에 바로 저장 후 , 콜백으로 리디렉션

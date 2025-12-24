@@ -91,7 +91,7 @@ router.post("/delete_process", (request, response) =>
         response.redirect('/');
     });
 
-router.get("/page/:pageId", (request, response, next) => // 미들웨어 순서에 의해 cru가 먼저 라우트 되어야함(왜냐면 /topic까지는 공통 url인데 예를 들어, /topic/create 로 라우팅 되면 :pageId가 없으므로 오류)
+router.get("/:pageId", (request, response, next) => // 미들웨어 순서에 의해 cru가 먼저 라우트 되어야함(왜냐면 /topic까지는 공통 url인데 예를 들어, /topic/create 로 라우팅 되면 data에 create 파일이 없어 :pageId가 없으므로 오류)
      var filteredId = path.parse(request.params.pageId).base;
      fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
        if(err) {

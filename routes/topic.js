@@ -11,10 +11,10 @@ var auth = require('../lib/auth.js');
 router.get("/create", (request, response) => 
     if(!auth.isOwner)(request, response) {
         response.redirect('/');
-        return false; // 나머지 뒤의 코드를 실행되지 않게 함
+        return false; // 나머지 뒤의 코드를 실행되지 않게 함(로그인 안돼있으니까)
     }
     var title = 'WEB - create';
-    var list = template.list(request.list);
+    var list = template.list(request.list); // main.js의 indexRouter 미들웨어로 쓰는 부분 바로 윗코드
     var html = template.HTML(title, list, `
       <form action="/create_process" method="post">
         <p><input type="text" name="title" placeholder="title"></p>
@@ -25,7 +25,7 @@ router.get("/create", (request, response) =>
           <input type="submit">
         </p>
       </form>
-    `, '', auth.statusUI(request, response));
+    `, '', auth.statusUI(request, response)); // auth.js에서 isOwner 검사하고 반환한 값. 
     response.send(html);
 );
 
@@ -42,7 +42,7 @@ router.post("/create_process", (request, response) =>  // form 에서 post 방�
 router.get("/update/:pageId", (request, response) =>
     if(!auth.isOwner)(request, response) {
         response.redirect('/');
-        return false; // 나머지 뒤의 코드를 실행되지 않게 함
+        return false; // 나머지 뒤의 코드를 실행되지 않게 함(로그인 안돼있으니까)
     }
     var filteredId = path.parse(request.params.pageId).base;
     fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
@@ -82,7 +82,7 @@ router.post("/update_process", (request, response) =>
 router.post("/delete_process", (request, response) =>
     if(!auth.isOwner)(request, response) {
         response.redirect('/');
-        return false; // 나머지 뒤의 코드를 실행되지 않게 함
+        return false; // 나머지 뒤의 코드를 실행되지 않게 함(로그인 안돼있으니까)
     }
     var post = request.body;
     var id = post.id;
@@ -91,7 +91,7 @@ router.post("/delete_process", (request, response) =>
         response.redirect('/');
     });
 
-router.get("/page/:pageId", (request, response, next) => // 미들웨어 순서에 의해 cru가 먼저 라우트 되어야함
+router.get("/page/:pageId", (request, response, next) => // 미들웨어 순서에 의해 cru가 먼저 라우트 되어야함(왜냐면 /topic까지는 공통 url인데 예를 들어, /topic/create 로 라우팅 되면 :pageId가 없으므로 오류)
      var filteredId = path.parse(request.params.pageId).base;
      fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
        if(err) {

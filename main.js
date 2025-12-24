@@ -30,7 +30,7 @@ app.get('*', function(request, response, next{ // get 방식으로 들어오는 
      });
 });
 
-app.use('/', indexRouter);
+app.use('/', indexRouter); // 첫번째 인자 : 기본 url, 두번째 인자 : 사용할 미들웨어
 app.use('/topic', topicRouter);
 app.use('/auth', authRouter);
 

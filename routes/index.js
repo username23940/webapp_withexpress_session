@@ -7,7 +7,7 @@ router.get('/', function(request, response) {
     
    var title = 'Welcome';
    var description = 'Hello, Node.js';
-   var list = template.list(request.list);
+   var list = template.list(request.list); // main.js에 있는 프로퍼티 접근
    var html = template.HTML(title, list,
      `
      <h2>${title}</h2>${description}
